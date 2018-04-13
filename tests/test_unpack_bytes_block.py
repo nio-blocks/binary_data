@@ -18,16 +18,27 @@ class TestUnpackBytes(NIOBlockTestCase):
             Signal({'key': 'baz', 'value': b'\x00\x42'})])
         blk.stop()
         self.assert_num_signals_notified(3)
-        self.assert_signal_list_notified([
-            Signal({'foo': 66}),
-            Signal({'bar': 66}),
-            Signal({'baz': 66})])
+        self.assert_last_signal_list_notified([Signal({'foo': 66}),
+                                               Signal({'bar': 66}),
+                                               Signal({'baz': 66})])
+
+    def test_multiple_values(self):
+        blk = UnpackBytes()
+        self.configure_block(blk, {'new_attributes': [{'key': 'one',
+                                                       'value': '{{ $value[0:2] }}'},
+                                                       {'key': 'two',
+                                                       'value': '{{ $value[2:4] }}'}]})
+        blk.start()
+        blk.process_signals([Signal({'value': b'\x00\x01\x00\x02'})])
+        blk.stop()
+        self.assert_num_signals_notified(1)
+        self.assert_last_signal_notified(Signal({'one': 1, 'two': 2}))
 
     def test_dynamic_data_types(self):
         """Unpack incoming bytes according to signal evaluation"""
         blk = UnpackBytes()
-        self.configure_block(blk, {'format': '{{ $format }}',
-                                   'endian': '{{ $endian }}'})
+        self.configure_block(blk, {'new_attributes': [{'format': '{{ $format }}',
+                                                       'endian': '{{ $endian }}'}]})
         blk.start()
         signal_list = [Signal({'format': 'unsigned_integer',
                                'endian': 'big',
@@ -43,13 +54,14 @@ class TestUnpackBytes(NIOBlockTestCase):
                                'value': b'\x00\x00\x00\x00'})]
         blk.process_signals(signal_list)
         blk.stop()
-        self.assert_signal_list_notified([Signal({'uint': 255}),
-                                          Signal({'int': -256}),
-                                          Signal({'float': 0.0})])
+        self.assert_last_signal_list_notified([Signal({'uint': 255}),
+                                               Signal({'int': -256}),
+                                               Signal({'float': 0.0})])
 
     def test_invalid_length(self):
         blk = UnpackBytes()
-        self.configure_block(blk, {'key': 'foo', 'value': b'\x00\x00\x00'})
+        self.configure_block(blk, {'new_attributes': [{'key': 'foo',
+                                                       'value': b'\x00\x00\x00'}]})
         blk.logger = MagicMock()
         blk.start()
         blk.process_signals([Signal()])
@@ -65,9 +77,9 @@ class TestUnpackBytes(NIOBlockTestCase):
         mock_unpack.side_effect = error('bad char in struct format')
         blk = UnpackBytes()
         # py3.6+ is required to unpack 2 bytes into a float, format char 'e'
-        self.configure_block(blk, {'format': 'float',
-                                   'key': 'foo',
-                                   'value': b'\x00\x00'})
+        self.configure_block(blk, {'new_attributes': [{'format': 'float',
+                                                       'key': 'foo',
+                                                       'value': b'\x00\x00'}]})
         blk.logger = MagicMock()
         blk.start()
         with self.assertRaises(error):
