@@ -67,8 +67,8 @@ class UnpackBytes(Block):
                         value = unpack(fmt, _bytes)[0]
                     except error as e:
                         if e.args[-1] == 'bad char in struct format':
-                            self.logger.error('Python >= 3.6 is required to unpack'
-                                              ' 2 bytes into a float')
+                            self.logger.error('Python >= 3.6 is required to '
+                                              'unpack 2 bytes into a float')
                         raise e
                     new_signal_dict[attr.key(signal)] = value
             outgoing_signals.append(Signal(new_signal_dict))
