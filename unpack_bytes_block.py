@@ -71,5 +71,6 @@ class UnpackBytes(Block):
                                               'unpack 2 bytes into a float')
                         raise e
                     new_signal_dict[attr.key(signal)] = value
-            outgoing_signals.append(Signal(new_signal_dict))
+            if new_signal_dict:
+                outgoing_signals.append(Signal(new_signal_dict))
         self.notify_signals(outgoing_signals)
