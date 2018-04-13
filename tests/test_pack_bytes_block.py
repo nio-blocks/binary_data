@@ -7,13 +7,13 @@ from ..pack_bytes_block import PackBytes
 class TestPackBytes(NIOBlockTestCase):
 
     def test_process_signals(self):
-        """Signals pass through block unmodified."""
+        """Pack incoming values"""
         blk = PackBytes()
-        self.configure_block(blk, {})
+        self.configure_block(blk, {'format': '{{ $type }}',
+                                   'order': '{{ $endian }}',
+                                   'data': '{{ $value }}'})
         blk.start()
-        blk.process_signals([Signal({"hello": "nio"})])
+        blk.process_signals([Signal({'type': 'i', 'endian': '', 'value': 42})])
         blk.stop()
         self.assert_num_signals_notified(1)
-        self.assertDictEqual(
-            self.last_notified[DEFAULT_TERMINAL][0].to_dict(),
-            {"hello": "nio"})
+        self.assert_last_signal_notified(Signal({'data': b'\x2A\x00\x00\x00'}))
