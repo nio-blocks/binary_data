@@ -8,7 +8,7 @@ from ..unpack_bytes_block import UnpackBytes
 class TestUnpackBytes(NIOBlockTestCase):
 
     def test_integers(self):
-        """Unpack an incoming integer"""
+        """Unpack incoming values according to their length"""
         blk = UnpackBytes()
         self.configure_block(blk, {})
         blk.start()
@@ -23,11 +23,12 @@ class TestUnpackBytes(NIOBlockTestCase):
                                                Signal({'baz': 66})])
 
     def test_multiple_values(self):
+        """Unpack two integers from one byte array"""
         blk = UnpackBytes()
-        self.configure_block(blk, {'new_attributes': [{'key': 'one',
-                                                       'value': '{{ $value[0:2] }}'},
-                                                       {'key': 'two',
-                                                       'value': '{{ $value[2:4] }}'}]})
+        self.configure_block(
+            blk,
+            {'new_attributes': [{'key': 'one', 'value': '{{ $value[0:2] }}'},
+                                {'key': 'two', 'value': '{{ $value[2:4] }}'}]})
         blk.start()
         blk.process_signals([Signal({'value': b'\x00\x01\x00\x02'})])
         blk.stop()
@@ -37,8 +38,11 @@ class TestUnpackBytes(NIOBlockTestCase):
     def test_dynamic_data_types(self):
         """Unpack incoming bytes according to signal evaluation"""
         blk = UnpackBytes()
-        self.configure_block(blk, {'new_attributes': [{'format': '{{ $format }}',
-                                                       'endian': '{{ $endian }}'}]})
+        self.configure_block(
+            blk,
+            {'new_attributes': [{'format': '{{ $format }}',
+                                 'endian': '{{ $endian }}',
+                                 'key': '{{ $key }}'}]})
         blk.start()
         signal_list = [Signal({'format': 'unsigned_integer',
                                'endian': 'big',
@@ -59,9 +63,11 @@ class TestUnpackBytes(NIOBlockTestCase):
                                                Signal({'float': 0.0})])
 
     def test_invalid_length(self):
+        """Log a helpful error when data length/type do not match"""
         blk = UnpackBytes()
-        self.configure_block(blk, {'new_attributes': [{'key': 'foo',
-                                                       'value': b'\x00\x00\x00'}]})
+        self.configure_block(
+            blk,
+            {'new_attributes': [{'key': 'foo', 'value': b'\x00\x00\x00'}]})
         blk.logger = MagicMock()
         blk.start()
         blk.process_signals([Signal()])
@@ -72,7 +78,7 @@ class TestUnpackBytes(NIOBlockTestCase):
 
     @patch(UnpackBytes.__module__ + '.unpack')
     def test_format_not_available(self, mock_unpack):
-        """log a helpful error if the installed python version does not
+        """Log a helpful error if the installed python version does not
         support the format specified"""
         mock_unpack.side_effect = error('bad char in struct format')
         blk = UnpackBytes()
