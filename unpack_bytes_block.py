@@ -54,7 +54,7 @@ class UnpackBytes(Block):
                 elif _type == 'float':
                     if len(_bytes) == 2:
                         fmt_char = 'e'  # added in python 3.6
-                    if len(_bytes) == 4:
+                    elif len(_bytes) == 4:
                         fmt_char = 'f'
                     elif len(_bytes) == 8:
                         fmt_char = 'd'
