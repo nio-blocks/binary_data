@@ -42,7 +42,7 @@ class PackBytes(EnrichSignals, Block):
                                              'key': '{{ $key }}',
                                              'value': '{{ $value }}',
                                              'length': 'four'}])
-    version = VersionProperty('0.1.0')
+    version = VersionProperty("0.1.2")
 
     def process_signals(self, signals):
         outgoing_signals = []

@@ -2,7 +2,7 @@
   "nio/PackBytes": {
     "language": "Python",
     "url": "git://github.com/nio-blocks/binary_data.git",
-    "version": "0.1.0"
+    "version": "0.1.2"
   },
   "nio/UnpackBytes": {
     "language": "Python",
