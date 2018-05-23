@@ -19,7 +19,7 @@ class TestPackBytes(NIOBlockTestCase):
         self.assert_last_signal_notified(Signal({'foo': b'\x00\x00\x00\x2A'}))
 
     def test_multiple_values(self):
-        """Unpack two integers from one byte array"""
+        """Pack two values from one signal"""
         blk = PackBytes()
         self.configure_block(
             blk,
@@ -33,7 +33,7 @@ class TestPackBytes(NIOBlockTestCase):
                                                  'two': b'\xff\xff\xff\xd6'}))
 
     def test_dynamic_data_types(self):
-        """Unpack incoming bytes according to signal evaluation"""
+        """Pack incoming values according to signal evaluation"""
         blk = PackBytes()
         self.configure_block(
             blk,
