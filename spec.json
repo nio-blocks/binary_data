@@ -1,40 +1,71 @@
 {
-  "namespace/BlockName": {
-    "version": "1.0.0",
-    "description": "Description of the block.",
+  "nio/PackBytes": {
+    "version": "0.1.0",
+    "description": "Convert numeric values to binary data.",
+    "categories": [
+      "Hardware",
+      "Communication"
+    ],
     "properties": {
-      "<property1>": {
-        "description": "Required description of the property"
-      },
-      "<property2>": {
-        "default": "Optional metadata with any key.",
-        "description": "Required description of the property"
+      "new_attributes": {
+        "title": "New Signal Attributes",
+        "type": "ListType",
+        "description": "Outgoing signal attributes to store each converted piece of binary data.\n  - *format*: Data type to convert, select one of `[integer, unsigned_integer, float]`.\n  - *endian*: Select `big` or `little` byte order.\n  - *length*: How many bytes to store the value, select one of `[2, 4, 8]`.\n  - *key*: Outgoing signal attribute to store the packed binary data.\n  - *value*: Numeric value to pack.",
+        "default": [
+          {
+            "format": "integer",
+            "endian": "big",
+            "key": "{{ $key }}",
+            "value": "{{ $value }}",
+            "length": "four"
+          }
+        ]
       }
     },
     "inputs": {
-      "<input1 | default>": {
-        "description": "Required description of the input"
-      },
-      "<input2>": {
-        "description": "Required description of the input"
+      "default": {
+        "description": "Any list of signals"
       }
     },
     "outputs": {
-      "<output1 | default>": {
-        "description": "Required description of the output"
-      },
-      "<output2>": {
-        "description": "Required description of the output"
+      "default": {
+        "description": "A list of signals of equal length to input signals, where each signal contains the converted `key: value` pairs in `new_attributes`."
       }
     },
-    "commands": {
-      "<command1>": {
-        "description": "Required description of the command",
-        "type": "Optional type and other metadata with any key."
-      },
-      "<command2>": {
-        "description": "Required description of the command"
+    "commands": {}
+  },
+  "nio/UnpackBytes": {
+    "version": "0.1.0",
+    "description": "Convert binary data into numeric values.",
+    "categories": [
+      "Hardware",
+      "Communication"
+    ],
+    "properties": {
+      "new_attributes": {
+        "title": "New Signal Attributes",
+        "type": "ListType",
+        "description": "Outgoing signal attributes to store each converted piece of binary data.\n  - *format*: Data type to convert, select one of `[integer, unsigned_integer, float]`.\n  - *endian*: Select `big` or `little` byte order.\n  - *key*: Outgoing signal attribute to store the numeric value.\n  - *value*: Binary data to unpack.",
+        "default": [
+          {
+            "format": "integer",
+            "endian": "big",
+            "key": "{{ $key }}",
+            "value": "{{ $value }}"
+          }
+        ]
       }
-    }
+    },
+    "inputs": {
+      "default": {
+        "description": "Any list of signals."
+      }
+    },
+    "outputs": {
+      "default": {
+        "description": "A list of signals of equal length to input signals, where each signal contains the converted `key: value` pairs in `new_attributes`."
+      }
+    },
+    "commands": {}
   }
 }
