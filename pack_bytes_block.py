@@ -1,6 +1,6 @@
 from enum import Enum
 from struct import pack, error
-from nio import Block, Signal
+from nio import Block
 from nio.block.mixins.enrich.enrich_signals import EnrichSignals
 from nio.properties import Property, BoolProperty, ListProperty, \
                            SelectProperty, StringProperty, VersionProperty, \
