@@ -94,3 +94,14 @@ class TestUnpackBytes(NIOBlockTestCase):
         blk.logger.error.assert_called_once_with(
             'Python >= 3.6 is required to unpack 2 bytes into a float')
         self.assert_num_signals_notified(0)
+
+    def test_signal_enrighment(self):
+        """Use enrich signal mixin"""
+        blk = UnpackBytes()
+        self.configure_block(blk, {'enrich': {'exclude_existing': False}})
+        blk.start()
+        blk.process_signals([Signal({'key': 'one', 'value': b'\x00\x01'})])
+        blk.stop()
+        self.assert_num_signals_notified(1)
+        self.assert_last_signal_notified(
+            Signal({'one': 1, 'key': 'one', 'value': b'\x00\x01'}))

@@ -1,6 +1,7 @@
 from enum import Enum
 from struct import unpack, error
-from nio import Block, Signal
+from nio import Block
+from nio.block.mixins.enrich.enrich_signals import EnrichSignals
 from nio.properties import Property, BoolProperty, ListProperty, \
                            SelectProperty, StringProperty, VersionProperty, \
                            PropertyHolder
@@ -23,7 +24,7 @@ class NewAttributes(PropertyHolder):
     key = StringProperty(title='New Attribute Key', default='{{ $key }}')
     value = Property(title='Bytes to Unpack', default='{{ $value }}')
 
-class UnpackBytes(Block):
+class UnpackBytes(EnrichSignals, Block):
 
     new_attributes = ListProperty(NewAttributes,
                                   title='New Signal Attributes',
@@ -72,5 +73,6 @@ class UnpackBytes(Block):
                         raise e
                     new_signal_dict[attr.key(signal)] = value
             if new_signal_dict:
-                outgoing_signals.append(Signal(new_signal_dict))
+                new_signal = self.get_output_signal(new_signal_dict, signal)
+                outgoing_signals.append(new_signal)
         self.notify_signals(outgoing_signals)

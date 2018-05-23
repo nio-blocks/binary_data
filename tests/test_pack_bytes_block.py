@@ -83,3 +83,14 @@ class TestPackBytes(NIOBlockTestCase):
         blk.logger.error.assert_called_once_with(
             'Python >= 3.6 is required to pack a float into 2 bytes')
         self.assert_num_signals_notified(0)
+
+    def test_signal_enrighment(self):
+        """Use enrich signal mixin"""
+        blk = PackBytes()
+        self.configure_block(blk, {'enrich': {'exclude_existing': False}})
+        blk.start()
+        blk.process_signals([Signal({'key': 'one', 'value': 1})])
+        blk.stop()
+        self.assert_num_signals_notified(1)
+        self.assert_last_signal_notified(
+            Signal({'one': b'\x00\x00\x00\x01', 'key': 'one', 'value': 1}))
