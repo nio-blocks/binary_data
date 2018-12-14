@@ -44,6 +44,8 @@ class UnpackBytes(EnrichSignals, Block):
                 _endian = attr.endian(signal).value
                 fmt_char = None
                 if _type in ['int', 'uint']:
+                    if len(_bytes) == 1:
+                        fmt_char = 'b'
                     if len(_bytes) == 2:
                         fmt_char = 'h'
                     elif len(_bytes) == 4:
