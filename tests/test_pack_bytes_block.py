@@ -32,6 +32,17 @@ class TestPackBytes(NIOBlockTestCase):
         self.assert_last_signal_notified(Signal({'one': b'\x00\x00\x00*',
                                                  'two': b'\xff\xff\xff\xd6'}))
 
+    def test_pack_lists(self):
+        """Pack incoming lists."""
+        blk = PackBytes()
+        self.configure_block(blk, {})
+        blk.start()
+        blk.process_signals([Signal({'key': 'foo', 'value': [42, 0]})])
+        blk.stop()
+        self.assert_num_signals_notified(1)
+        self.assert_last_signal_notified(Signal({
+            'foo': b'\x00\x00\x00\x2A\x00\x00\x00\x00'}))
+
     def test_dynamic_data_types(self):
         """Pack incoming values according to signal evaluation"""
         blk = PackBytes()

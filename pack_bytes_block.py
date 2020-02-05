@@ -70,9 +70,13 @@ class PackBytes(EnrichSignals, Block):
                         fmt_char = 'f'
                     elif _length == 8:
                         fmt_char = 'd'
-                fmt = _endian + fmt_char
                 try:
-                    value = pack(fmt, _value)
+                    if isinstance(_value, list):
+                        fmt = _endian + (fmt_char * len(_value))
+                        value = pack(fmt, *_value)
+                    else:
+                        fmt = _endian + fmt_char
+                        value = pack(fmt, _value)
                 except error as e:
                     if e.args[-1] == 'bad char in struct format':
                         self.logger.error('Python >= 3.6 is required to '
